@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Gladiator.tf stats backpack.tf integration
 // @namespace       https://gladiator.tf
-// @version         1.0
+// @version         1.1
 // @description     Provides a link to Gladiator.tf listing snapshots on backpack.tf pages
 // @author          manic
 // @grant           none
@@ -15,6 +15,7 @@
 // @match           https://backpack.tf/stats*
 // @match           https://backpack.tf/suggestion/*
 // @match           https://backpack.tf/item/*
+// @match           https://backpack.tf/vote/*
 // ==/UserScript==
 
 (function() {
@@ -23,6 +24,7 @@
     let item = $('.stats-header-title').text();
     if (!item) item = $('.header .item-name').text();
     if (!item) item = $('.item-text h2').text();
+    if (!item) item = $('#item-panel-name h2').text();
 
     item = item.trim().replace("%", "%25");
 
