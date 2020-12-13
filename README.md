@@ -5,9 +5,8 @@ A script to put links to gladiator.tf listing snapshots on some backpack.tf page
 ## Installation
 
 1. Install [Greasemonkey (Firefox)](http://www.greasespot.net/) or [Tampermonkey (Chrome)](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo).
-2. Open the [script in raw view](https://github.com/mninc/gladiator.tf-bot-owner-script/raw/master/gladiator.user.js).
+2. Open the [script in raw view](https://github.com/mninc/gladiator.tf-stats-bptf/raw/master/gladiatortf-stats-bptf.user.js).
 3. Install.
-
 
 ## Images
 ![Stats page](https://cdn.discordapp.com/attachments/445162468541464576/787714168315707392/unknown.png)
