@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Gladiator.tf stats backpack.tf integration
 // @namespace       https://gladiator.tf
-// @version         1.1
+// @version         1.2
 // @description     Provides a link to Gladiator.tf listing snapshots on backpack.tf pages
 // @author          manic
 // @grant           none
@@ -30,8 +30,10 @@
 
     $('#classifieds').append(`
         <a class="btn btn-default" href="https://gladiator.tf/listings?item=${item}" target="_blank"><i class="fa fa-history fa-fw"></i> Gladiator.tf snapshots</a>
+        <a class="btn btn-default" href="https://gladiator.tf/sales?item=${item}" target="_blank"><i class="fa fa-bar-chart fa-fw"></i> Gladiator.tf stats</a>
     `);
     $('.panel:first .panel-extras').append(`
         <a class="btn btn-panel" href="https://gladiator.tf/listings?item=${item}" target="_blank"><i class="fa fa-history fa-fw"></i> Gladiator.tf snapshots</a>
+        <a class="btn btn-panel" href="https://gladiator.tf/sales?item=${item}" target="_blank"><i class="fa fa-bar-chart fa-fw"></i> Gladiator.tf stats</a>
     `);
 })();
