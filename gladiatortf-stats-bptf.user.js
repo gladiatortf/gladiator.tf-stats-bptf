@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Gladiator.tf stats backpack.tf integration
 // @namespace       https://gladiator.tf
-// @version         1.2
+// @version         1.3
 // @description     Provides a link to Gladiator.tf listing snapshots on backpack.tf pages
 // @author          manic
 // @grant           none
@@ -12,10 +12,10 @@
 // @downloadURL     https://github.com/mninc/gladiator.tf-stats-bptf/raw/master/gladiatortf-stats-bptf.user.js
 
 // @run-at          document-end
-// @match           https://backpack.tf/stats*
-// @match           https://backpack.tf/suggestion/*
-// @match           https://backpack.tf/item/*
-// @match           https://backpack.tf/vote/*
+// @include         /^https?:\/\/(.*\.)?backpack\.tf(:\d+)?\/stats\//
+// @include         /^https?:\/\/(.*\.)?backpack\.tf(:\d+)?\/suggestion\//
+// @include         /^https?:\/\/(.*\.)?backpack\.tf(:\d+)?\/item\//
+// @include         /^https?:\/\/(.*\.)?backpack\.tf(:\d+)?\/vote\//
 // ==/UserScript==
 
 (function() {
