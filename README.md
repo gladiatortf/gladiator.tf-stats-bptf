@@ -4,7 +4,7 @@ A script to put links to gladiator.tf listing snapshots and item statistics on s
 
 ## Installation
 
-1. Install [Greasemonkey (Firefox)](http://www.greasespot.net/) or [Tampermonkey (Chrome)](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo).
+1. Install [Tampermonkey](https://www.tampermonkey.net/).
 2. Open the [script in raw view](https://github.com/mninc/gladiator.tf-stats-bptf/raw/master/gladiatortf-stats-bptf.user.js).
 3. Install.
 

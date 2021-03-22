@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            Gladiator.tf stats backpack.tf integration
 // @namespace       https://gladiator.tf
-// @version         1.3
+// @version         1.4
 // @description     Provides a link to Gladiator.tf listing snapshots on backpack.tf pages
 // @author          manic
 // @grant           none
