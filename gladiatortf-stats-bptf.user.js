@@ -20,6 +20,12 @@
 
 (function() {
     'use strict';
+  
+    for (let i of document.getElementsByClassName('btn btn-default')) {
+      if (i.origin === 'https://gladiator.tf') { 
+        return;
+      }
+    }
 
     let item = $('.stats-header-title').text();
     if (!item) item = $('.header .item-name').text();
