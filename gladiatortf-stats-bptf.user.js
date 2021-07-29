@@ -2,7 +2,7 @@
 // @name            Gladiator.tf stats backpack.tf integration
 // @namespace       https://gladiator.tf
 // @version         1.4
-// @description     Provides a link to Gladiator.tf listing snapshots on backpack.tf pages
+// @description     Provides a link to various Gladiator.tf stats pages on backpack.tf pages
 // @author          manic
 // @grant           none
 // @license         MIT
@@ -20,11 +20,11 @@
 
 (function() {
     'use strict';
-  
+
     for (let i of document.getElementsByClassName('btn btn-default')) {
-      if (i.origin === 'https://gladiator.tf') { 
-        return;
-      }
+        if (i.origin === 'https://gladiator.tf') {
+            return;
+        }
     }
 
     let item = $('.stats-header-title').text();
@@ -35,11 +35,28 @@
     item = item.trim().replace("%", "%25");
 
     $('#classifieds').append(`
+        <a class="btn btn-default" href="https://gladiator.tf/time-machine?item=${item}&at=${new Date().toISOString()}" target="_blank"><i class="fa fa-clock-o fa-fw"></i> Gladiator.tf Time Machine</a>
         <a class="btn btn-default" href="https://gladiator.tf/listings?item=${item}" target="_blank"><i class="fa fa-history fa-fw"></i> Gladiator.tf snapshots</a>
         <a class="btn btn-default" href="https://gladiator.tf/sales?item=${item}" target="_blank"><i class="fa fa-bar-chart fa-fw"></i> Gladiator.tf stats</a>
     `);
-    $('.panel:first .panel-extras').append(`
+    let panelExtras = $('.panel:first .panel-extras');
+    panelExtras.append(`
         <a class="btn btn-panel" href="https://gladiator.tf/listings?item=${item}" target="_blank"><i class="fa fa-history fa-fw"></i> Gladiator.tf snapshots</a>
         <a class="btn btn-panel" href="https://gladiator.tf/sales?item=${item}" target="_blank"><i class="fa fa-bar-chart fa-fw"></i> Gladiator.tf stats</a>
     `);
+
+    // time machine
+    if (location.pathname.startsWith("/suggestion")) {
+        let time = new Date($('.submitter-info .timeago').attr("datetime"));
+        panelExtras.prepend(`
+            <a class="btn btn-panel" href="https://gladiator.tf/time-machine?item=${item}&at=${time.toISOString()}" target="_blank"><i class="fa fa-clock-o fa-fw"></i> Gladiator.tf Time Machine</a>
+        `);
+    } else if (location.pathname.startsWith("/item")) {
+        $('.history-sheet tr').each(function() {
+            let tr = $(this);
+            let time = new Date(tr.find('td:last-child').text());
+            if (!time.getTime()) return;
+            tr.find('td:nth-child(2)').append(`<span style="float: right; margin-left: 0.6em;"><a href="https://gladiator.tf/time-machine?item=${item}&at=${time.toISOString()}" target="_blank" data-tip="bottom" title="Gladiator.tf Time Machine"><i class="fa fa-clock-o fa-fw"></i></a></span>`)
+        })
+    }
 })();

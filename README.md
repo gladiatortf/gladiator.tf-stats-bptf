@@ -1,6 +1,6 @@
 # gladiator.tf stats on backpack.tf
 
-A script to put links to gladiator.tf listing snapshots and item statistics on some backpack.tf pages.
+A script to put links to gladiator.tf listing snapshots, time machine and item statistics on some backpack.tf pages.
 
 ## Installation
 
