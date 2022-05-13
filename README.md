@@ -1,6 +1,6 @@
 # gladiator.tf stats on backpack.tf
 
-A script to put links to gladiator.tf listing snapshots and item statistics on some backpack.tf pages.
+A script to put links to gladiator.tf listing snapshots and item statistics on backpack.tf item popups.
 
 ## Installation
 
@@ -9,6 +9,5 @@ A script to put links to gladiator.tf listing snapshots and item statistics on s
 3. Install.
 
 ## Images
-![Stats page](https://cdn.discordapp.com/attachments/445162468541464576/791698145405960202/unknown.png)
-![Suggestion page](https://cdn.discordapp.com/attachments/445162468541464576/791698264608866324/unknown.png)
-![History page](https://cdn.discordapp.com/attachments/445162468541464576/791698433433927710/unknown.png)
+![Links to gladiator.tf stats in backpack.tf item popup](https://user-images.githubusercontent.com/26234962/168305341-0c5413d3-78c2-4bf5-8fc5-0cf100f63df2.png)
+
