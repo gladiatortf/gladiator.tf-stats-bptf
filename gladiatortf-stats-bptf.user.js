@@ -1,15 +1,15 @@
 // ==UserScript==
 // @name            Gladiator.tf stats backpack.tf integration
 // @namespace       https://gladiator.tf
-// @version         1.4
+// @version         1.5
 // @description     Provides a link to various Gladiator.tf stats pages on backpack.tf pages
 // @author          manic
 // @grant           none
 // @license         MIT
 
-// @homepageURL     https://github.com/mninc/gladiator.tf-stats-bptf
-// @supportURL      https://github.com/mninc/gladiator.tf-stats-bptf/issues
-// @downloadURL     https://github.com/mninc/gladiator.tf-stats-bptf/raw/master/gladiatortf-stats-bptf.user.js
+// @homepageURL     https://github.com/gladiatortf/gladiator.tf-stats-bptf
+// @supportURL      https://github.com/gladiatortf/gladiator.tf-stats-bptf/issues
+// @downloadURL     https://github.com/gladiatortf/gladiator.tf-stats-bptf/raw/master/gladiatortf-stats-bptf.user.js
 
 // @run-at          document-end
 // @include         /^https?:\/\/(.*\.)?backpack\.tf(:\d+)?\/stats\//
