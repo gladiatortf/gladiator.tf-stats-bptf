@@ -7,9 +7,9 @@
 // @grant           none
 // @license         MIT
 
-// @homepageURL     https://github.com/mninc/gladiator.tf-stats-bptf
-// @supportURL      https://github.com/mninc/gladiator.tf-stats-bptf/issues
-// @downloadURL     https://github.com/mninc/gladiator.tf-stats-bptf/raw/master/gladiatortf-stats-bptf.user.js
+// @homepageURL     https://github.com/gladiatortf/gladiator.tf-stats-bptf
+// @supportURL      https://github.com/gladiatortf/gladiator.tf-stats-bptf/issues
+// @downloadURL     https://github.com/gladiatortf/gladiator.tf-stats-bptf/raw/master/gladiatortf-stats-bptf.user.js
 
 // @run-at          document-end
 // @include         /^https?:\/\/(.*\.)?backpack\.tf(:\d+)?\//
