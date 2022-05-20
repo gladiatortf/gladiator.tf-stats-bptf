@@ -44,7 +44,14 @@
                     for (const link of links) {
                         const href = link.getAttribute("href");
                         if (href.startsWith("/profiles/") && href.includes("?time=")) {
-                            setTimeout(() => { // ensure it's fully loaded
+                            const itemInfoInterval = setInterval(() => { // ensure it's fully loaded
+                                const itemInfo = document.getElementsByClassName("item-info")[0];
+                                if (itemInfo) {
+                                    clearInterval(itemInfoInterval)
+                                } else {
+                                    return;
+                                }
+
                                 let item = document.getElementsByClassName("item-info")[0].innerText.trim();
                                 const nonCraftable = [...document.getElementsByClassName("attribute__title")].some(elem => elem.innerText.trim() === "Craftable");
                                 if (nonCraftable) item = `Non-Craftable ${item}`;
