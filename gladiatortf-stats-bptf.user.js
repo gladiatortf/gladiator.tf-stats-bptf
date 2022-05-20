@@ -11,7 +11,7 @@
 // @supportURL      https://github.com/gladiatortf/gladiator.tf-stats-bptf/issues
 // @downloadURL     https://github.com/gladiatortf/gladiator.tf-stats-bptf/raw/master/gladiatortf-stats-bptf.user.js
 
-// @run-at          document-end
+// @run-at          document-start
 // @include         /^https?:\/\/(.*\.)?backpack\.tf(:\d+)?\//
 
 // @require https://unpkg.com/popper.js@1
@@ -68,6 +68,33 @@
                             break;
                         }
                     }
+                } else if (node.classList?.contains("col-12") && node.innerText.startsWith("Snapshot")) {
+                    const cards = document.getElementsByClassName("card");
+                    let item;
+                    for (const card of cards) {
+                        if (!card.getElementsByClassName("vote-buttons").length) continue;
+
+                        item = card.getElementsByClassName("card__header__title")[0].innerText;
+                    }
+                    if (!item) continue;
+
+                    const loadedInterval = setInterval(() => {
+                        const loading = node.getElementsByClassName("loading-spinner-wrapper").length;
+                        if (loading) {
+                            return;
+                        }
+
+                        const div = node.querySelector(".card__content > div");
+                        const link = document.createElement("a");
+                        const atElement = document.querySelector(".suggestion__header__metadata__submission-date > div > div");
+                        if (!atElement) return;
+                        const at = new Date(atElement.getAttribute("content"));
+                        link.setAttribute("href", `https://gladiator.tf/time-machine?item=${item}&at=${at.toISOString()}`);
+                        link.setAttribute("target", "_blank");
+                        link.innerText = "Gladiator.tf Time Machine";
+                        div.insertBefore(link, div.firstChild);
+                        clearInterval(loadedInterval);
+                    }, 10);
 
                 } else if (node.classList?.contains("tippy-popper")) {
                     const titleElem = node.getElementsByClassName("item-tooltip__header__title")[0];
