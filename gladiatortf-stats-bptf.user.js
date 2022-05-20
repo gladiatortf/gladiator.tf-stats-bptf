@@ -100,7 +100,7 @@
 
                     const statsLink = referenceLink.cloneNode(true);
                     statsLink.classList.add("btn-item-glad");
-                    statsLink.setAttribute("href", `https://gladiator.tf/sales?item=${item}`);
+                    statsLink.setAttribute("href", `https://gladiator.tf/sales?item=${item}&at=${new Date().toISOString()}`);
                     statsLink.innerHTML = ICON(10, 10) + " Gladiator.tf Stats";
                     linkBox = addLink(linkBox, referenceLinkBox, statsLink);
                 }
