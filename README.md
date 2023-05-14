@@ -1,6 +1,6 @@
 # gladiator.tf stats on backpack.tf
 
-A script to put links to gladiator.tf listing snapshots, time machine and item statistics on some backpack.tf pages.
+A script to put links to gladiator.tf time machine and item statistics on some backpack.tf pages.
 
 ## Installation
 
@@ -9,6 +9,7 @@ A script to put links to gladiator.tf listing snapshots, time machine and item s
 3. Install.
 
 ## Images
-![Stats page](https://user-images.githubusercontent.com/26234962/168865355-925f1e62-1ce1-40b2-a02f-a2e18dec7190.png)
-![Suggestion page](https://user-images.githubusercontent.com/26234962/168865181-9f72fdc4-bb73-48c3-82b2-b2db30276893.png)
-![History page](https://user-images.githubusercontent.com/26234962/168864976-2af01c60-800d-45b0-ae04-2f60c6c74645.png)
+
+![Stats page](https://github.com/gladiatortf/gladiator.tf-stats-bptf/assets/26234962/f48f02fc-f331-4fa5-bb10-7f38a63e5267)
+![Suggestion page](https://github.com/gladiatortf/gladiator.tf-stats-bptf/assets/26234962/fa03cc20-0323-4560-9c7d-1a0caa804fbf)
+![History page](https://github.com/gladiatortf/gladiator.tf-stats-bptf/assets/26234962/cc32e879-935d-4bc2-9cf5-35b6adc991ba)
