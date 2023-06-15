@@ -1,3 +1,5 @@
+# ⚠️Gladiator.tf has shut down, this script is no longer functional⚠️
+
 # gladiator.tf stats on backpack.tf
 
 A script to put links to gladiator.tf time machine and item statistics on some backpack.tf pages.
