@@ -1,4 +1,3 @@
-# ⚠️Gladiator.tf has shut down, this script is no longer functional⚠️
 
 # gladiator.tf stats on backpack.tf
 
