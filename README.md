@@ -9,6 +9,9 @@ A script to put links to gladiator.tf time machine and item statistics on some b
 2. Open the [script in raw view](https://github.com/mninc/gladiator.tf-stats-bptf/raw/master/gladiatortf-stats-bptf.user.js).
 3. Install.
 
+> [!WARNING] 
+> To use this in Chromium-based browsers (Google Chrome, Opera, Edge), you need to navigate to Manage Extensions page (chrome://extensions/) and enable Developer Mode.
+
 ## Images
 
 ![Stats page](https://github.com/gladiatortf/gladiator.tf-stats-bptf/assets/26234962/f48f02fc-f331-4fa5-bb10-7f38a63e5267)
