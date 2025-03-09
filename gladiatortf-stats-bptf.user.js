@@ -74,9 +74,9 @@ function hookPopups() {
 
             if ($element.hasClass("popover")) {
                 let $popover = $element.find("#popover-price-links");
-                if ($popover.find(`a[href^='https://${GLAD_DOMAIN}']`).length == 0) {
+                if ($popover.find(`.gladiator-stats-button`).length == 0) {
                     const originalTitle = $(self).data('original-title');
-                    $popover.append(`<a class="btn btn-default btn-xs" href="https://${GLAD_DOMAIN}/sales?item=${encodeURIComponent(originalTitle)}" target="_blank"><i class="fa fa-bar-chart fa-fw"></i>Gladiator.tf Stats</a>`);
+                    $popover.append(`<a class="btn btn-default btn-xs gladiator-stats-button" href="https://${GLAD_DOMAIN}/sales?item=${encodeURIComponent(originalTitle)}" target="_blank"><i class="fa fa-bar-chart fa-fw"></i>Gladiator.tf Stats</a>`);
                 }
 
                 clearInterval(id);
