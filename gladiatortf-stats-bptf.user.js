@@ -2,7 +2,7 @@
 // @name            Gladiator.tf stats backpack.tf integration
 // @namespace       https://gladiator.tf
 // @version         2.1
-// @description     Provides a link to Gladiator.tf listing snapshots on backpack.tf pages
+// @description     Provides a link to various Gladiator.tf stats pages on backpack.tf pages
 // @author          Gladiator.TF Team & manic
 // @grant           none
 // @license         MIT
