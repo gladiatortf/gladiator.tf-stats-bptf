@@ -13,8 +13,8 @@
 // @updateURL       https://github.com/gladiatortf/gladiator.tf-stats-bptf/raw/master/gladiatortf-stats-bptf.user.js
 
 // @run-at          document-start
-// @match           https://backpack.tf/
-// @match           https://*.backpack.tf/
+// @match           https://backpack.tf/*
+// @match           https://*.backpack.tf/*
 
 // @require         https://unpkg.com/popper.js@1
 // @require         https://unpkg.com/tippy.js@4
