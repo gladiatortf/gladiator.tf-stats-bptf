@@ -16,8 +16,8 @@
 // @match           https://backpack.tf/
 // @match           https://*.backpack.tf/
 
-// @require https://unpkg.com/popper.js@1
-// @require https://unpkg.com/tippy.js@4
+// @require         https://unpkg.com/popper.js@1
+// @require         https://unpkg.com/tippy.js@4
 // ==/UserScript==
 
 var GLAD_DOMAIN = "gladiator.tf";
