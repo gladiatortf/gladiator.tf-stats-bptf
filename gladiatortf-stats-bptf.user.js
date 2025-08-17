@@ -164,8 +164,21 @@ function nextVersion() {
     observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
 }
 
+function isClassicPath(path) {
+    return path.startsWith("/stats/")
+      || path.startsWith("/suggestion/")
+      || path.startsWith("/item/")
+      || path.startsWith("/vote/")
+      || path.startsWith("/classifieds/")
+}
+
 function classicVersion() {
     'use strict';
+
+    if (!isClassicPath(window.location.pathname)) {
+        console.log("Wrong classic path: " + window.location.pathname);
+        return;
+    }
 
     console.log('Running');
     for (let i of document.getElementsByClassName('btn btn-default')) {
