@@ -16,243 +16,360 @@
 // @match           https://backpack.tf/*
 // @match           https://*.backpack.tf/*
 
-// @require https://unpkg.com/popper.js@1
-// @require https://unpkg.com/tippy.js@4
+// @require         https://unpkg.com/popper.js@1
+// @require         https://unpkg.com/tippy.js@4
 // ==/UserScript==
 
-var GLAD_DOMAIN = "gladiator.tf";
-
 (function () {
-    'use strict';
+	"use strict";
 
-    console.log("Hostname", document.location.hostname);
-    if (document.location.hostname === "next.backpack.tf") {
-        console.log("Next");
-        nextVersion();
-        return;
-    }
+	const GLAD_DOMAIN = "gladiator.tf";
 
-    document.addEventListener(
-        'DOMContentLoaded', // run-at=document-end
-        () => {
-            console.log("Classic");
-            classicVersion();
-        },
-        { once: true }
-    );
-})();
+	const isNext = typeof __NUXT__ !== "undefined";
+	const nextWebsite = isNext
+		? document.location.hostname
+		: "next.backpack.tf"; // In-case update changes the hostname
 
-function nextVersion() {
-    'use strict';
+	const LOGGER = {
+		info: msg => {
+			console.log("[gladiator-stats]: " + msg);
+		}
+	};
 
-    const ICON = (width, height) => `<image xlink:href="https://gladiator.tf/img/logo.svg" src="https://gladiator.tf/img/logo.svg" width="${width}" height="${height}"></image>`;
+	const ICON = (width, height) =>
+		`<image xlink:href="https://gladiator.tf/img/logo.svg" src="https://gladiator.tf/img/logo.svg" width="${width}" height="${height}"></image>`;
 
-    const addLink = (linkBox, referenceLinkBox, newLink) => {
-        if (linkBox.childElementCount >= 3) {
-            let newLinkBox = referenceLinkBox.cloneNode();
-            linkBox.parentNode.insertBefore(newLinkBox, linkBox.nextSibling);
-            linkBox = newLinkBox;
-        }
-        linkBox.append(" ");
-        linkBox.append(newLink);
-        return linkBox;
-    }
+	const addLinkNext = (linkBox, referenceLinkBox, newLink) => {
+		if (linkBox.childElementCount >= 3) {
+			let newLinkBox = referenceLinkBox.cloneNode();
+			linkBox.parentNode.insertBefore(newLinkBox, linkBox.nextSibling);
+			linkBox = newLinkBox;
+		}
 
-    const callback = function (mutationsList) {
-        for (const mutation of mutationsList) {
-            if (mutation.type !== "childList") continue;
+		linkBox.append(" ");
+		linkBox.append(newLink);
+		return linkBox;
+	};
 
-            for (const node of mutation.addedNodes) {
-                if (node.tagName === "TD") {
-                    const links = node.getElementsByTagName("a");
-                    for (const link of links) {
-                        const href = link.getAttribute("href");
-                        if (href.startsWith("/profiles/") && href.includes("?time=")) {
-                            const itemInfoInterval = setInterval(() => { // ensure it's fully loaded
-                                const itemInfo = document.getElementsByClassName("item-info")[0];
-                                if (itemInfo) {
-                                    clearInterval(itemInfoInterval)
-                                } else {
-                                    return;
-                                }
+	function handleTdNext(node) {
+		const links = Array.from(node.getElementsByTagName("a"));
+		const link = links.find(
+			link =>
+				link.href.startsWith("/profiles/") &&
+				link.href.includes("?time=")
+		);
 
-                                let item = document.getElementsByClassName("item-info")[0].innerText.trim();
-                                const nonCraftable = [...document.getElementsByClassName("attribute__title")].some(elem => elem.innerText.trim() === "Craftable");
-                                if (nonCraftable) item = `Non-Craftable ${item}`;
-                                item = encodeURIComponent(item);
-                                const newLink = link.cloneNode();
-                                newLink.innerHTML = ICON(15, 15);
-                                const at = new Date(parseInt(href.split("?time=")[1]) * 1000);
-                                newLink.setAttribute("href", `https://gladiator.tf/time-machine?item=${item}&at=${at.toISOString()}`);
-                                newLink.setAttribute("target", "_blank");
-                                newLink.setAttribute("data-tippy-content", "Gladiator.tf Time Machine");
-                                tippy(newLink);
-                                link.parentNode.insertBefore(newLink, link);
-                            }, 10);
-                            break;
-                        }
-                    }
-                } else if (node.classList?.contains("col-12") && node.innerText.startsWith("Snapshot")) {
-                    const cards = document.getElementsByClassName("card");
-                    let item;
-                    for (const card of cards) {
-                        if (!card.getElementsByClassName("vote-buttons").length) continue;
+		if (!link) {
+			return;
+		}
 
-                        item = card.getElementsByClassName("card__header__title")[0].innerText;
-                    }
-                    if (!item) continue;
+		const itemInfoInterval = setInterval(() => {
+			const itemInfo = document.getElementsByClassName("item-info")[0];
 
-                    const loadedInterval = setInterval(() => {
-                        const loading = node.getElementsByClassName("loading-spinner-wrapper").length;
-                        if (loading) {
-                            return;
-                        }
+			if (!itemInfo) {
+				return;
+			}
 
-                        const div = node.querySelector(".card__content > div");
-                        const link = document.createElement("a");
-                        const atElement = document.querySelector(".suggestion__header__metadata__submission-date > div > div");
-                        if (!atElement) return;
-                        const at = new Date(atElement.getAttribute("content"));
-                        link.setAttribute("href", `https://gladiator.tf/time-machine?item=${item}&at=${at.toISOString()}`);
-                        link.setAttribute("target", "_blank");
-                        link.innerText = "Gladiator.tf Time Machine";
-                        div.insertBefore(link, div.firstChild);
-                        clearInterval(loadedInterval);
-                    }, 10);
+			clearInterval(itemInfoInterval);
 
-                } else if (node.classList?.contains("tippy-popper")) {
-                    const titleElem = node.getElementsByClassName("item-tooltip__header__title")[0];
-                    if (!titleElem) continue;
+			let itemName = document
+				.getElementsByClassName("item-info")[0]
+				.innerText.trim();
 
-                    if (node.getElementsByClassName("btn-item-glad").length) continue;
+			const nonCraftable = [
+				...document.getElementsByClassName("attribute__title")
+			].some(elem => elem.innerText.trim() === "Craftable");
 
-                    let item = titleElem.innerText;
+			if (nonCraftable) {
+				itemName = `Non-Craftable ${itemName}`;
+			}
 
-                    let links = node.getElementsByTagName("a");
-                    let query;
-                    for (const link of links) {
-                        let href = link.getAttribute("href");
-                        if (href.startsWith("/classifieds")) {
-                            query = new URLSearchParams(href.split("?")[1]);
-                            break;
-                        }
-                    }
-                    if (!query) continue;
+			const newLink = link.cloneNode();
+			const at = new Date(parseInt(href.split("?time=")[1]) * 1000);
 
-                    const craftable = query.get("craftable");
-                    if (craftable === "0") item = `Non-Craftable ${item}`;
-                    item = encodeURIComponent(item);
+			newLink.innerHTML = ICON(15, 15);
+			newLink.setAttribute(
+				"href",
+				`https://gladiator.tf/time-machine?item=${encodeURIComponent(
+					itemName
+				)}&at=${at.toISOString()}`
+			);
+			newLink.setAttribute("target", "_blank");
+			newLink.setAttribute(
+				"data-tippy-content",
+				"Gladiator.tf Time Machine"
+			);
 
-                    let linkBoxes = node.getElementsByClassName("item-tooltip__content__links");
-                    let linkBox = linkBoxes[linkBoxes.length - 1];
-                    const referenceLinkBox = linkBox;
-                    const referenceLink = linkBoxes[0].children[0].cloneNode(true);
-                    referenceLink.setAttribute("target", "_blank");
+			tippy(newLink);
+			link.parentNode.insertBefore(newLink, link);
+		}, 10);
+	}
 
-                    const statsLink = referenceLink.cloneNode(true);
-                    statsLink.classList.add("btn-item-glad");
-                    statsLink.setAttribute("href", `https://gladiator.tf/sales?item=${item}&at=${new Date().toISOString()}`);
-                    statsLink.innerHTML = ICON(10, 10) + " Gladiator.tf Stats";
-                    linkBox = addLink(linkBox, referenceLinkBox, statsLink);
-                }
-            }
-        }
-    };
+	function handleCol12SnapshotNext(node) {
+		const cards = Array.from(document.getElementsByClassName("card"));
+		const vtCard = cards.find(
+			card => card.getElementsByClassName("vote-buttons").length
+		);
+		if (!vtCard) {
+			return;
+		}
 
-    const observer = new MutationObserver(callback);
+		const itemName = vtCard.getElementsByClassName("card__header__title")[0]
+			.innerText;
 
-    observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true });
-}
+		const loadedInterval = setInterval(() => {
+			const loading = node.getElementsByClassName(
+				"loading-spinner-wrapper"
+			).length;
 
-function isClassicPath(path) {
-    return path.startsWith("/stats/")
-    || path.startsWith("/suggestion/")
-    || path.startsWith("/item/")
-    || path.startsWith("/vote/")
-    || path.startsWith("/classifieds")
-}
+			if (loading) {
+				return;
+			}
 
-function classicVersion() {
-    'use strict';
+			const atElement = document.querySelector(
+				".suggestion__header__metadata__submission-date > div > div"
+			);
 
-    hookPopups();
+			if (!atElement) {
+				return;
+			}
 
-    if (!isClassicPath(window.location.pathname)) {
-        console.log("Wrong classic path: " + window.location.pathname);
-        return;
-    }
+			const at = new Date(atElement.getAttribute("content"));
 
-    console.log('Running');
-    for (let i of document.getElementsByClassName('btn btn-default')) {
-        if (i.origin === 'https://gladiator.tf') {
-            return;
-        }
-    }
+			const timeMachineLink = document.createElement("a");
 
-    let item = $('.stats-header-title').text();
-    if (!item) item = $('.header .item-name').text();
-    if (!item) item = $('.item-text h2').text();
-    if (!item) item = $('#item-panel-name h2').text();
+			timeMachineLink.setAttribute(
+				"href",
+				`https://gladiator.tf/time-machine?item=${encodeURIComponent(
+					itemName
+				)}&at=${at.toISOString()}`
+			);
 
-    item = item.trim().replace("%", "%25");
+			timeMachineLink.setAttribute("target", "_blank");
+			timeMachineLink.innerText = "Gladiator.tf Time Machine";
 
-    $('#classifieds').append(`
-        <a class="btn btn-default" href="https://${GLAD_DOMAIN}/time-machine?item=${item}&at=${new Date().toISOString()}" target="_blank"><i class="fa fa-clock-o fa-fw"></i> Gladiator.tf Time Machine</a>
-        <a class="btn btn-default" href="https://${GLAD_DOMAIN}/sales?item=${item}" target="_blank"><i class="fa fa-bar-chart fa-fw"></i> Gladiator.tf stats</a>
+			const div = node.querySelector(".card__content > div");
+			div.insertBefore(timeMachineLink, div.firstChild);
+
+			clearInterval(loadedInterval);
+		}, 10);
+	}
+
+	function handlePopperNext(node) {
+		const titleElem = node.getElementsByClassName(
+			"item-tooltip__header__title"
+		)[0];
+
+		if (!titleElem || node.getElementsByClassName("btn-item-glad").length) {
+			return;
+		}
+
+		let itemName = titleElem.innerText;
+		for (const link of node.getElementsByTagName("a")) {
+			if (link.href.startsWith(`https://${nextWebsite}/classifieds`)) {
+				const query = new URLSearchParams(link.href.split("?")[1]);
+				if (query.get("craftable") === "0") {
+					itemName = `Non-Craftable ${itemName}`;
+				}
+
+				break;
+			}
+		}
+
+		const linkBoxes = node.getElementsByClassName(
+			"item-tooltip__content__links"
+		);
+		const referenceLinkBox = linkBoxes[linkBoxes.length - 1];
+		const referenceLink = linkBoxes[0].children[0].cloneNode(true);
+		referenceLink.setAttribute("target", "_blank");
+
+		const statsLink = referenceLink.cloneNode(true);
+		statsLink.classList.add("btn-item-glad");
+		statsLink.setAttribute(
+			"href",
+			`https://gladiator.tf/sales?item=${encodeURIComponent(
+				itemName
+			)}&at=${new Date().toISOString()}`
+		);
+		statsLink.innerHTML = ICON(10, 10) + " Gladiator.tf Stats";
+
+		addLinkNext(referenceLinkBox, referenceLinkBox, statsLink);
+	}
+
+	function nextVersion() {
+		"use strict";
+
+		function observe(mutationsList) {
+			for (const mutation of mutationsList) {
+				if (mutation.type !== "childList") {
+					continue;
+				}
+
+				for (const node of mutation.addedNodes) {
+					if (node.tagName === "TD") {
+						handleTdNext(node);
+					} else if (
+						node.classList?.contains("col-12") &&
+						node.innerText.startsWith("Snapshot")
+					) {
+						handleCol12SnapshotNext(node);
+					} else if (node.classList?.contains("tippy-popper")) {
+						handlePopperNext(node);
+					}
+				}
+			}
+		}
+
+		new MutationObserver(observe).observe(document.documentElement, {
+			childList: true,
+			subtree: true,
+			attributes: true
+		});
+	}
+
+	function isClassicPathForPanelButtons(path) {
+		return (
+			path.startsWith("/stats/") ||
+			path.startsWith("/suggestion/") ||
+			path.startsWith("/item/") ||
+			path.startsWith("/vote/") ||
+			path.startsWith("/classifieds")
+		);
+	}
+
+	function classicVersion() {
+		"use strict";
+
+		hookPopupsClassic();
+
+		if (!isClassicPathForPanelButtons(window.location.pathname)) {
+			return;
+		}
+
+		LOGGER.info("Adding panel buttons for " + window.location.pathname);
+		for (let i of document.getElementsByClassName("btn btn-default")) {
+			if (i.origin === "https://gladiator.tf") {
+				return;
+			}
+		}
+
+		addPanelButtonsClassic();
+	}
+
+	function addPanelButtonsClassic() {
+		let itemName = $(".stats-header-title").text();
+		if (!itemName) itemName = $(".header .item-name").text();
+		if (!itemName) itemName = $(".item-text h2").text();
+		if (!itemName) itemName = $("#item-panel-name h2").text();
+
+		itemName = itemName.trim().replace("%", "%25");
+
+		$("#classifieds").append(`
+        <a class="btn btn-default" href="https://${GLAD_DOMAIN}/time-machine?item=${itemName}&at=${new Date().toISOString()}" target="_blank">
+		    <i class="fa fa-clock-o fa-fw"></i> Gladiator.tf Time Machine
+		</a>
+        <a class="btn btn-default" href="https://${GLAD_DOMAIN}/sales?item=${itemName}" target="_blank"><i class="fa fa-bar-chart fa-fw">
+		    </i> Gladiator.tf stats
+		</a>
     `);
-    let panelExtras = $('.panel:first .panel-extras');
-    panelExtras.append(`
-        <a class="btn btn-panel" href="https://${GLAD_DOMAIN}/sales?item=${item}" target="_blank"><i class="fa fa-bar-chart fa-fw"></i> Gladiator.tf stats</a>
+
+		const panelExtras = $(".panel:first .panel-extras");
+		panelExtras.append(`
+        <a class="btn btn-panel" href="https://${GLAD_DOMAIN}/sales?item=${itemName}" target="_blank"><i class="fa fa-bar-chart fa-fw">
+		    </i> Gladiator.tf stats
+		</a>
     `);
 
-    // time machine
-    if (location.pathname.startsWith("/suggestion")) {
-        let time = new Date($('.submitter-info .timeago').attr("datetime"));
-        panelExtras.prepend(`
-            <a class="btn btn-panel" href="https://${GLAD_DOMAIN}/time-machine?item=${item}&at=${time.toISOString()}" target="_blank"><i class="fa fa-clock-o fa-fw"></i> Gladiator.tf Time Machine</a>
+		if (location.pathname.startsWith("/suggestion")) {
+			const time = new Date(
+				$(".submitter-info .timeago").attr("datetime")
+			);
+
+			panelExtras.prepend(`
+            <a class="btn btn-panel" href="https://${GLAD_DOMAIN}/time-machine?item=${itemName}&at=${time.toISOString()}" target="_blank">
+			    <i class="fa fa-clock-o fa-fw"></i> Gladiator.tf Time Machine
+			</a>
         `);
-    } else if (location.pathname.startsWith("/item")) {
-        $('.history-sheet tr').each(function() {
-            let tr = $(this);
-            let time = new Date(tr.find('td:last-child').text());
-            if (!time.getTime()) return;
-            tr.find('td:nth-child(2)').append(`<span style="float: right; margin-left: 0.6em;"><a href="https://gladiator.tf/time-machine?item=${item}&at=${time.toISOString()}" target="_blank" data-tip="bottom" title="Gladiator.tf Time Machine"><i class="fa fa-clock-o fa-fw"></i></a></span>`)
-        })
-    }
-}
+		} else if (location.pathname.startsWith("/item")) {
+			$(".history-sheet tr").each(function () {
+				const tr = $(this);
+				const time = new Date(tr.find("td:last-child").text());
+				if (!time.getTime()) {
+					return;
+				}
 
-function hookPopups() {
-    /* global $ */
+				tr.find("td:nth-child(2)").append(
+					`<span style="float: right; margin-left: 0.6em;">
+				    <a href="https://gladiator.tf/time-machine?item=${itemName}&at=${time.toISOString()}" target="_blank" data-tip="bottom" title="Gladiator.tf Time Machine">
+					    <i class="fa fa-clock-o fa-fw"></i>
+					</a>
+				</span>`
+				);
+			});
+		}
+	}
 
-    $("body").on("mouseover", ".item", function () {
-        const self = this;
+	function appendPopperClassic($target) {
+		const $element = $target.next();
+		if (!$element.hasClass("popover")) {
+			return false;
+		}
 
-        const id = setInterval(function() {
-            const $element = $(self).next();
+		let $gladLinks = $element.find("#popover-glad-links");
+		if ($gladLinks.length === 0) {
+			const $additionalLinks = $element.find("#popover-additional-links");
 
-            if ($element.hasClass("popover")) {
-                let $gladLinks = $element.find("#popover-glad-links");
-                if ($gladLinks.length === 0) {
-                    const $additionalLinks = $element.find("#popover-additional-links");
+			$gladLinks = $additionalLinks.clone();
+			$gladLinks.empty();
+			$gladLinks.attr("id", "popover-glad-links");
 
-                    $gladLinks = $additionalLinks.clone()
-                    $gladLinks.empty();
-                    $gladLinks.attr("id", "popover-glad-links");
+			$element.find(".popover-content").first().append($gladLinks);
+		}
 
-                    $element.find(".popover-content").first().append($gladLinks);
-                }
+		if ($gladLinks.find(`.gladiator-stats-button`).length == 0) {
+			const originalTitle = $target.data("original-title");
 
-                if ($gladLinks.find(`.gladiator-stats-button`).length == 0) {
-                    const originalTitle = $(self).data('original-title');
-                    $gladLinks.append(`<a class="btn btn-default btn-xs gladiator-stats-button" href="https://${GLAD_DOMAIN}/sales?item=${encodeURIComponent(originalTitle)}" target="_blank"><i class="fa fa-bar-chart fa-fw"></i>Gladiator.tf Stats</a>`);
-                }
+			$gladLinks.append(
+				`<a class="btn btn-default btn-xs gladiator-stats-button" href="https://${GLAD_DOMAIN}/sales?item=${encodeURIComponent(
+					originalTitle
+				)}" target="_blank"><i class="fa fa-bar-chart fa-fw"></i>Gladiator.tf Stats</a>`
+			);
+		}
 
-                clearInterval(id);
-            }
-        }, 50);
+		return true;
+	}
 
-        setTimeout(function () {
-            clearInterval(id);
-        }, 750);
-    });
-}
+	function hookPopupsClassic() {
+		/* global $ */
+
+		$("body").on("mouseover", ".item", function () {
+			const self = this;
+
+			const id = setInterval(() => {
+				if (appendPopperClassic($(self))) {
+					clearInterval(id);
+				}
+			}, 50);
+
+			setTimeout(function () {
+				clearInterval(id);
+			}, 750);
+		});
+	}
+
+	if (isNext) {
+		LOGGER.info("On next site");
+		nextVersion();
+		return;
+	}
+
+	LOGGER.info("On classic site");
+	document.addEventListener(
+		"DOMContentLoaded", // run-at=document-end
+		() => {
+			LOGGER.info("Classic starting...");
+			classicVersion();
+		},
+		{ once: true }
+	);
+})();
