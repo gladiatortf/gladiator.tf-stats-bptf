@@ -20,10 +20,8 @@
 // @require         https://unpkg.com/tippy.js@4
 // ==/UserScript==
 
-// https://next.backpack.tf/suggestions/68b1784303370cdf6402dd58
 // https://next.backpack.tf/suggestions/queue
 // https://next.backpack.tf/item/16051359390
-// https://next.backpack.tf/stats?item=Ol%27%20Geezer&quality=Unusual&priceindex=38
 
 (function () {
 	"use strict";
@@ -61,6 +59,7 @@
 
 	function runScript() {
 		isNext = typeof $ === "undefined" || typeof __NUXT__ !== "undefined";
+
 		nextWebsite = isNext ? document.location.hostname : "next.backpack.tf"; // When the move happens
 
 		if (isNext) {
@@ -153,28 +152,25 @@
 	}
 
 	function handleSnapshotNext(node) {
-		const cards = Array.from(document.getElementsByClassName("card"));
-		const vtCard = cards.find(
-			card => card.getElementsByClassName("vote-buttons").length
-		);
-		if (!vtCard) {
+		const cards = document.getElementsByClassName("card");
+		if (cards.length === 0) {
 			return;
 		}
 
-		const itemName = vtCard.getElementsByClassName("card__header__title")[0]
-			.innerText;
+		const card = cards[0];
+		const itemName = card
+			.querySelector(".card__header__title")
+			.textContent.trim();
 
 		const statsLink = document.createElement("a");
 		statsLink.setAttribute(
 			"href",
-			`https://${GLAD_DOMAIN}/sales?item=${itemName}`
+			`https://${GLAD_DOMAIN}/sales?item=${encodeURIComponent(itemName)}`
 		);
 		statsLink.setAttribute("target", "_blank");
 		statsLink.innerText = "Gladiator.tf Stats";
 
-		vtCard
-			.getElementsByClassName("card__header__actions")[0]
-			.append(statsLink);
+		card.querySelector(".card__header__actions").append(statsLink);
 
 		const appendTimeMachineInterval = setInterval(() => {
 			const atElement = document.querySelector(
@@ -249,9 +245,45 @@
 		addLinkNext(referenceLinkBox, referenceLinkBox, statsLink);
 	}
 
-	function nextVersion() {
-		"use strict";
+	function handleStatsPageNext(node) {
+		const cards = document.getElementsByClassName("card");
+		if (cards.length === 0) {
+			return;
+		}
 
+		const card = cards[0];
+		const itemName = card
+			.querySelector(".card__content h2")
+			.textContent.trim();
+
+		const statsLink = document.createElement("a");
+		statsLink.classList.add("col-auto");
+		statsLink.setAttribute(
+			"href",
+			`https://${GLAD_DOMAIN}/sales?item=${itemName}`
+		);
+		statsLink.setAttribute("target", "_blank");
+		statsLink.innerText = "Gladiator.tf Stats";
+
+		card.querySelector(".card__header__actions > .row").prepend(statsLink);
+
+		const timeMachineLink = document.createElement("a");
+		timeMachineLink.classList.add("col-auto");
+		timeMachineLink.setAttribute(
+			"href",
+			`https://${GLAD_DOMAIN}/time-machine?item=${encodeURIComponent(
+				itemName
+			)}`
+		);
+		timeMachineLink.setAttribute("target", "_blank");
+		timeMachineLink.innerText = "Gladiator.tf Time Machine";
+
+		node.querySelector(".card__header__actions > .row").prepend(
+			timeMachineLink
+		);
+	}
+
+	function nextVersion() {
 		function observe(mutationsList) {
 			for (const mutation of mutationsList) {
 				if (mutation.type !== "childList") {
@@ -261,15 +293,24 @@
 				for (const node of mutation.addedNodes) {
 					if (node.tagName === "TD") {
 						handleTdNext(node);
-					} else if (
-						node.classList?.contains("col-12") &&
-						node.innerText.startsWith("Snapshot")
-					) {
-						handleSnapshotNext(node);
 					} else if (node.classList?.contains("tippy-popper")) {
 						handlePopperNext(node);
-					} else {
-						console.log(node);
+					} else if (
+						node.classList?.contains("p-chart") &&
+						node.parentNode?.parentNode?.parentNode
+							?.querySelector(".card__header__title")
+							?.textContent.trim() === "Classifieds Trends"
+					) {
+						handleStatsPageNext(
+							node.parentNode.parentNode.parentNode
+						);
+					} else if (
+						node.classList?.contains("card__header__actions") &&
+						node.parentNode?.querySelector(
+							".card__header__title > span"
+						)?.textContent === "Snapshot"
+					) {
+						handleSnapshotNext(node.parentNode);
 					}
 				}
 			}
@@ -293,8 +334,6 @@
 	}
 
 	function classicVersion() {
-		"use strict";
-
 		hookPopupsClassic();
 
 		if (!isClassicPathForPanelButtons(window.location.pathname)) {
