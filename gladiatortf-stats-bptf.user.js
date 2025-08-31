@@ -20,15 +20,19 @@
 // @require         https://unpkg.com/tippy.js@4
 // ==/UserScript==
 
+// https://next.backpack.tf/suggestions/68b1784303370cdf6402dd58
+// https://next.backpack.tf/suggestions/queue
+// https://next.backpack.tf/item/16051359390
+// https://next.backpack.tf/stats?item=Ol%27%20Geezer&quality=Unusual&priceindex=38
+
 (function () {
 	"use strict";
 
-	const GLAD_DOMAIN = "gladiator.tf";
+	/* global $ */
+	/* global __NUXT__ */
+	/* global tippy */
 
-	const isNext = typeof __NUXT__ !== "undefined";
-	const nextWebsite = isNext
-		? document.location.hostname
-		: "next.backpack.tf"; // In-case update changes the hostname
+	const GLAD_DOMAIN = "gladiator.tf";
 
 	const LOGGER = {
 		info: msg => {
@@ -39,7 +43,50 @@
 	const ICON = (width, height) =>
 		`<image xlink:href="https://gladiator.tf/img/logo.svg" src="https://gladiator.tf/img/logo.svg" width="${width}" height="${height}"></image>`;
 
-	const addLinkNext = (linkBox, referenceLinkBox, newLink) => {
+	let isNext;
+	let nextWebsite;
+
+	if (typeof $ !== "undefined" || typeof __NUXT__ !== "undefined") {
+		runScript();
+		return;
+	}
+
+	const loadInterval = setInterval(() => {
+		if (typeof $ !== "undefined" || typeof __NUXT__ !== "undefined") {
+			clearInterval(loadInterval);
+			runScript();
+			return;
+		}
+	}, 10);
+
+	function runScript() {
+		isNext = typeof $ === "undefined" || typeof __NUXT__ !== "undefined";
+		nextWebsite = isNext ? document.location.hostname : "next.backpack.tf"; // When the move happens
+
+		if (isNext) {
+			LOGGER.info("On next site");
+			nextVersion();
+			return;
+		}
+
+		LOGGER.info("On classic site");
+		if (document.readyState !== "loading") {
+			LOGGER.info("Classic loaded");
+			classicVersion();
+			return;
+		}
+
+		document.addEventListener(
+			"DOMContentLoaded", // run-at=document-end
+			() => {
+				LOGGER.info("Classic loaded");
+				classicVersion();
+			},
+			{ once: true }
+		);
+	}
+
+	function addLinkNext(linkBox, referenceLinkBox, newLink) {
 		if (linkBox.childElementCount >= 3) {
 			let newLinkBox = referenceLinkBox.cloneNode();
 			linkBox.parentNode.insertBefore(newLinkBox, linkBox.nextSibling);
@@ -49,7 +96,7 @@
 		linkBox.append(" ");
 		linkBox.append(newLink);
 		return linkBox;
-	};
+	}
 
 	function handleTdNext(node) {
 		const links = Array.from(node.getElementsByTagName("a"));
@@ -85,7 +132,7 @@
 			}
 
 			const newLink = link.cloneNode();
-			const at = new Date(parseInt(href.split("?time=")[1]) * 1000);
+			const at = new Date(parseInt(link.href.split("?time=")[1]) * 1000);
 
 			newLink.innerHTML = ICON(15, 15);
 			newLink.setAttribute(
@@ -105,7 +152,7 @@
 		}, 10);
 	}
 
-	function handleCol12SnapshotNext(node) {
+	function handleSnapshotNext(node) {
 		const cards = Array.from(document.getElementsByClassName("card"));
 		const vtCard = cards.find(
 			card => card.getElementsByClassName("vote-buttons").length
@@ -117,15 +164,19 @@
 		const itemName = vtCard.getElementsByClassName("card__header__title")[0]
 			.innerText;
 
-		const loadedInterval = setInterval(() => {
-			const loading = node.getElementsByClassName(
-				"loading-spinner-wrapper"
-			).length;
+		const statsLink = document.createElement("a");
+		statsLink.setAttribute(
+			"href",
+			`https://${GLAD_DOMAIN}/sales?item=${itemName}`
+		);
+		statsLink.setAttribute("target", "_blank");
+		statsLink.innerText = "Gladiator.tf Stats";
 
-			if (loading) {
-				return;
-			}
+		vtCard
+			.getElementsByClassName("card__header__actions")[0]
+			.append(statsLink);
 
+		const appendTimeMachineInterval = setInterval(() => {
 			const atElement = document.querySelector(
 				".suggestion__header__metadata__submission-date > div > div"
 			);
@@ -135,24 +186,26 @@
 			}
 
 			const at = new Date(atElement.getAttribute("content"));
-
 			const timeMachineLink = document.createElement("a");
-
 			timeMachineLink.setAttribute(
 				"href",
-				`https://gladiator.tf/time-machine?item=${encodeURIComponent(
+				`https://${GLAD_DOMAIN}/time-machine?item=${encodeURIComponent(
 					itemName
 				)}&at=${at.toISOString()}`
 			);
-
 			timeMachineLink.setAttribute("target", "_blank");
 			timeMachineLink.innerText = "Gladiator.tf Time Machine";
 
-			const div = node.querySelector(".card__content > div");
-			div.insertBefore(timeMachineLink, div.firstChild);
+			const snapshotActions = node.querySelector(
+				".card__header__actions"
+			);
+			if (!snapshotActions) {
+				return;
+			}
 
-			clearInterval(loadedInterval);
-		}, 10);
+			snapshotActions.appendChild(timeMachineLink);
+			clearInterval(appendTimeMachineInterval);
+		}, 50);
 	}
 
 	function handlePopperNext(node) {
@@ -212,9 +265,11 @@
 						node.classList?.contains("col-12") &&
 						node.innerText.startsWith("Snapshot")
 					) {
-						handleCol12SnapshotNext(node);
+						handleSnapshotNext(node);
 					} else if (node.classList?.contains("tippy-popper")) {
 						handlePopperNext(node);
+					} else {
+						console.log(node);
 					}
 				}
 			}
@@ -341,8 +396,6 @@
 	}
 
 	function hookPopupsClassic() {
-		/* global $ */
-
 		$("body").on("mouseover", ".item", function () {
 			const self = this;
 
@@ -357,20 +410,4 @@
 			}, 750);
 		});
 	}
-
-	if (isNext) {
-		LOGGER.info("On next site");
-		nextVersion();
-		return;
-	}
-
-	LOGGER.info("On classic site");
-	document.addEventListener(
-		"DOMContentLoaded", // run-at=document-end
-		() => {
-			LOGGER.info("Classic starting...");
-			classicVersion();
-		},
-		{ once: true }
-	);
 })();
