@@ -21,7 +21,6 @@
 // ==/UserScript==
 
 // https://next.backpack.tf/suggestions/queue
-// https://next.backpack.tf/item/16051359390
 
 (function () {
 	"use strict";
@@ -101,8 +100,7 @@
 		const links = Array.from(node.getElementsByTagName("a"));
 		const link = links.find(
 			link =>
-				link.href.startsWith("/profiles/") &&
-				link.href.includes("?time=")
+				link.href.includes("/profiles/") && link.href.includes("?time=")
 		);
 
 		if (!link) {
