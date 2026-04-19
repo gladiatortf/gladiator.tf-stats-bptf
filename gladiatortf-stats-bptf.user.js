@@ -36,7 +36,7 @@ var GLAD_DOMAIN = "gladiator.tf";
     if (!item) item = $('.item-text h2').text();
     if (!item) item = $('#item-panel-name h2').text();
 
-    item = item.trim().replace("%", "%25");
+    item = encodeURIComponent(item.trim());
 
     $('#classifieds').append(`
         <a class="btn btn-default" href="https://${GLAD_DOMAIN}/time-machine?item=${item}&at=${new Date().toISOString()}" target="_blank"><i class="fa fa-clock-o fa-fw"></i> Gladiator.tf Time Machine</a>
